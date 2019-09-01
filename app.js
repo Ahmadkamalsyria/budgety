@@ -36,12 +36,10 @@ var budgetController = (function () {
       } else if (type === 'inc') {
         newItem = new Incomes(ID, des, val)
       }
-      data.allItems[type].push(newItem)
-    },
-    test: function () {
-      console.log(data);
-
+      data.allItems[type].push(newItem);
+      return newItem;
     }
+
   }
 
 
@@ -54,7 +52,9 @@ var uIController = (function () {
     inputType: ".add__type",
     inputDescription: ".add__description",
     inputValue: ".add__value",
-    addBtn: ".add__btn"
+    addBtn: ".add__btn",
+    expenseList: ".expenses__list",
+    incomeList: ".income__list"
   };
   return {
     getInputValues: function () {
@@ -63,6 +63,29 @@ var uIController = (function () {
         description: document.querySelector(domStrings.inputDescription).value,
         value: document.querySelector(domStrings.inputValue).value
       };
+    },
+    addNewItemToTheDom: function (obj, type) {
+      console.log(obj);
+      var html, newHtml, element;
+      // get the html 
+      if (type === 'inc') {
+        // get the income html
+        element = domStrings.incomeList;
+        html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+      }
+      else if (type === 'exp') {
+        // get the expense html
+        element = domStrings.expenseList;
+        html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+      }
+      // replace the static values with a placeholders
+      newHtml = html.replace('%id%', obj.id);
+      newHtml = newHtml.replace('%description%', obj.description);
+      newHtml = newHtml.replace('%value%', obj.value);
+
+      // display 
+      console.log(element);
+      document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
     },
     getDOMStrings: function () {
       return domStrings;
@@ -84,7 +107,9 @@ var controller = (function (budgetCtr, UICtr) {
 
   var addItem = function () {
     var inputs = UICtr.getInputValues();
-    budgetCtr.addNewItem(inputs.type, inputs.description, inputs.value)
+    var item = budgetCtr.addNewItem(inputs.type, inputs.description, inputs.value);
+    console.log(item);
+    UICtr.addNewItemToTheDom(item, inputs.type);
   };
 
   return {
